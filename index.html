@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Идентичные, совместимые и анонимные типы в C++</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1f2430;--muted:#5b6475;--accent:#3b5bdb;--accent2:#e8edff;--code:#14181f;--codet:#e6edf7;--ok:#e7f6ec;--okb:#2f9e55;--warn:#fff4e0;--warnb:#e08a00;--bad:#fdecec;--badb:#d64545;--line:#e3e6ee}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b1f2a;--text:#e8ebf2;--muted:#9aa4b8;--accent:#8ea4ff;--accent2:#252c47;--code:#0b0d12;--ok:#1a2e22;--warn:#33280f;--bad:#331c1c;--line:#2b3040}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:32px 18px 60px}
+header{background:linear-gradient(135deg,#3b5bdb,#7048e8);color:#fff;border-radius:18px;padding:30px 28px;margin-bottom:26px}
+header h1{margin:0 0 6px;font-size:1.8rem;line-height:1.25}
+header p{margin:0;opacity:.9}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 26px;margin-bottom:22px}
+h2{margin:0 0 14px;font-size:1.3rem;color:var(--accent)}
+h2 span.n{display:inline-block;background:var(--accent2);border-radius:8px;padding:0 10px;margin-right:8px}
+h3{margin:22px 0 10px;font-size:1.08rem}
+pre{background:var(--code);color:var(--codet);padding:16px 18px;border-radius:12px;overflow-x:auto;font:14px/1.55 ui-monospace,Consolas,monospace;margin:0}
+code{background:var(--accent2);padding:1px 6px;border-radius:5px;font:.92em ui-monospace,Consolas,monospace}
+.group{border-left:4px solid var(--accent);background:var(--accent2);border-radius:0 12px 12px 0;padding:12px 16px;margin:12px 0}
+.group b.t{display:block;margin-bottom:4px}
+.chain{font-family:ui-monospace,Consolas,monospace;font-size:.93rem;color:var(--muted)}
+.chip{display:inline-block;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:1px 11px;margin:2px 3px 2px 0;font:.9rem ui-monospace,Consolas,monospace}
+.box{border-radius:12px;padding:12px 16px;margin:14px 0;border-left:4px solid}
+.ok{background:var(--ok);border-color:var(--okb)}
+.warn{background:var(--warn);border-color:var(--warnb)}
+.bad{background:var(--bad);border-color:var(--badb)}
+.box b:first-child{display:block;margin-bottom:2px}
+ul{padding-left:20px;margin:8px 0}
+li{margin:5px 0}
+.cheat{display:grid;gap:12px}
+.cheat div{background:var(--accent2);border-radius:12px;padding:12px 16px}
+.cheat .q{font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin-top:10px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left}
+th{color:var(--muted);font-weight:600}
+.table-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Идентичные, совместимые и анонимные типы в C++</h1>
+  <p>Разбор на примере цепочек <code style="background:rgba(255,255,255,.2);color:#fff">typedef</code> и перечислений <code style="background:rgba(255,255,255,.2);color:#fff">enum</code></p>
+</header>
+
+<section>
+  <h2><span class="n">1</span>Исходный код для анализа</h2>
+<pre>typedef int T1;
+typedef T1 T2;
+typedef int T3;
+typedef T3 T4;
+typedef int T5;
+typedef T6 T7;
+typedef T6 T8;
+typedef char T9;
+typedef char T10;
+
+int x;
+
+enum { Alfa, Beta, Gama, Delta } y;
+enum T6 { A, B, C, D, E, F, G, H };
+enum bukva { Alfa, Beta, Gama, Delta } z;</pre>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Разбор категорий типов в C++</h2>
+
+  <h3>2.1. Идентичные типы (Identical Types)</h3>
+  <p>Ключевое слово <code>typedef</code> не создаёт новый тип данных, а лишь объявляет <b>псевдоним (синоним)</b> уже существующего. Компилятор определяет тип подстановкой базового определения.</p>
+
+  <div class="group">
+    <b class="t">Целочисленная группа</b>
+    <span class="chip">T1</span><span class="chip">T2</span><span class="chip">T3</span><span class="chip">T4</span><span class="chip">T5</span><span class="chip">int</span><span class="chip">тип x</span>
+    <div class="chain">T2 → T1 → int &nbsp;·&nbsp; T4 → T3 → int &nbsp;·&nbsp; T5 → int</div>
+    <div>Все они — абсолютно один и тот же тип <code>int</code>.</div>
+  </div>
+
+  <div class="group">
+    <b class="t">Группа перечисления T6</b>
+    <span class="chip">T6</span><span class="chip">T7</span><span class="chip">T8</span>
+    <div class="chain">T7 → T6 &nbsp;·&nbsp; T8 → T6</div>
+  </div>
+
+  <div class="group">
+    <b class="t">Символьная группа</b>
+    <span class="chip">T9</span><span class="chip">T10</span><span class="chip">char</span>
+    <div class="chain">T9 → char &nbsp;·&nbsp; T10 → char</div>
+  </div>
+
+  <div class="box warn">
+    <b>⚠ Правило перечислений (enum)</b>
+    Каждое новое объявление <code>enum</code> создаёт уникальный самостоятельный тип. Например, <code>enum Color { Red, Green, Blue };</code> или <code>enum bukva { … };</code> — тип, который <b>не</b> идентичен ни <code>T6</code>, ни другим перечислениям, даже если значения их элементов совпадают.
+  </div>
+
+  <h3>2.2. Совместимые типы (Compatible Types)</h3>
+  <p>Совместимые — типы, значения которых можно неявно приводить или присваивать друг другу без ошибок компиляции.</p>
+  <ul>
+    <li><b>Целочисленная группа:</b> все псевдонимы <code>int</code> (T1–T5, тип переменной <code>x</code>) полностью взаимно совместимы.</li>
+    <li><b>Приведение enum:</b> константы и переменные традиционных <code>enum</code> (T6–T8, <code>y</code>, <code>z</code>) неявно приводятся к <code>int</code> в выражениях и при присваивании.</li>
+    <li><b>Внутри одной группы перечисления:</b> переменные T6, T7 и T8 взаимозаменяемы при присваивании и сравнении.</li>
+    <li><b>Символьная группа:</b> T9, T10 и <code>char</code> полностью взаимозаменяемы.</li>
+  </ul>
+
+  <h3>2.3. Анонимные типы (Anonymous Types)</h3>
+  <p>Анонимный тип — тип, объявленный «на лету» без собственного имени (идентификатора типа).</p>
+
+  <div class="box bad">
+    <b>✗ Вариант 1: <code>enum { Alfa, Beta, Gama, Delta } y;</code></b>
+    Это <b>анонимный</b> тип. У самого <code>enum</code> нет названия, поэтому объявить ещё одну переменную этого же типа в другом месте программы по имени типа невозможно.
+  </div>
+  <div class="box ok">
+    <b>✓ Вариант 2: <code>enum bukva { Alfa, Beta, Gama, Delta } z;</code></b>
+    Анонимного типа здесь нет: перечислению присвоено имя <code>bukva</code>, значит, это именованный пользовательский тип.
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Ключевые правила системы типов C++</h2>
+  <ul>
+    <li><b>Псевдонимы.</b> <code>typedef</code> — это просто «второе имя» типа. Для компилятора <code>T1</code> и <code>T4</code> — буквально одно и то же <code>int</code>.</li>
+    <li><b>Строгое разделение перечислений.</b> Разные объявления <code>enum</code> — разные типы. Присвоить значение типа <code>bukva</code> переменной типа <code>T6</code> напрямую (без явного приведения) нельзя.</li>
+    <li><b>Встроенные типы.</b> Переменная <code>int x;</code> имеет обычный именованный базовый тип <code>int</code>. Анонимными бывают только структуры, объединения и перечисления, объявленные без имени.</li>
+  </ul>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Категория</th><th>Примеры из кода</th></tr>
+    <tr><td>Идентичные</td><td>T1…T5 = <code>int</code>; T6 = T7 = T8; T9 = T10 = <code>char</code></td></tr>
+    <tr><td>Совместимые</td><td>группы выше; <code>enum</code> → <code>int</code> неявно</td></tr>
+    <tr><td>Анонимные</td><td>тип переменной <code>y</code></td></tr>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Шпаргалка для самопроверки</h2>
+  <div class="cheat">
+    <div><span class="q">🔍 Видишь <code>typedef</code>?</span><br>Это не новый тип, а синоним существующего.</div>
+    <div><span class="q">🔍 Видишь новый <code>enum Name { … }</code>?</span><br>Это новый уникальный тип, не идентичный другим <code>enum</code>.</div>
+    <div><span class="q">🔍 Ищешь анонимный тип?</span><br>Ищи конструкции без имени типа: <code>enum { … } …;</code> или <code>struct { … } …;</code>.</div>
+  </div>
+</section>
+
+</div>
+</body>
+</html>
